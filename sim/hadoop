@@ -1,0 +1,118 @@
+#!/usr/bin/ruby
+
+# Simulate hadoop well enough to do local testing.
+
+# This is where files are in hadoop.
+HADOOP_PATH_PREFIX = "/user/chayden"
+# This is where they are in the simulation.
+HADOOP_DIR = "."
+
+# Strip off HADOOP_PATH_PREFIX from the path (if present).
+# Then put HADOOP_DIR on the front.
+def expand_path(path)
+  if path =~ Regexp.new(Regexp.escape(HADOOP_PATH_PREFIX + "/") + "(.*)")
+    path = $1
+  end
+  "#{HADOOP_DIR}/#{path}"
+end
+
+case ARGV[0]
+# 
+# Do hadoop fs commands
+when 'fs':
+  ARGV.shift
+  case ARGV[0]
+  when '-rmr':
+    dest = ARGV[1]
+    if dest.nil?
+      STDERR.puts "missing argument"
+      exit 1
+    end
+    system("rm -rf #{expand_path(dest)}")
+  when '-rm':
+    dest = ARGV[1]
+    if dest.nil?
+      STDERR.puts "missing argument"
+      exit 1
+    end
+    system("rm -f #{expand_path(dest)}")
+  when '-mkdir':
+    dest = ARGV[1]
+    if dest.nil?
+      STDERR.puts "missing argument"
+      exit 1
+    end
+    system("mkdir -p #{expand_path(dest)}")
+  when '-copyFromLocal':
+  when '-put':
+    src = ARGV[1]
+    dest = ARGV[2]
+    if src.nil? || dest.nil? 
+      STDERR.puts "missing argument"
+      exit 1
+    end
+   system("cp #{src} #{expand_path(dest)}")
+  when '-cat':
+    src = ARGV[1]
+    if src.nil? 
+      STDERR.puts "missing argument"
+      exit 1
+    end
+    if  File.exists?(expand_path(src))
+      system("cat #{expand_path(src)}")
+    end
+  when '-ls':
+    dest = ARGV[1]
+    if dest.nil? 
+      system("cd #{HADOOP_DIR}; ls -l '--time-style=+%Y-%m-%d %H:%M'")
+    else
+      system("cd #{HADOOP_DIR};ls -l '--time-style=+%Y-%m-%d %H:%M' #{dest}")
+    end
+  when '-lsr':
+    dest = ARGV[1]
+    if dest == '/user'
+      # special test data
+      system("cat #{HADOOP_DIR}/sample-ls-data")
+    else
+      system("cd #{HADOOP_DIR};ls -lR '--time-style=+%Y-%m-%d %H:%M' #{dest}")
+    end
+  else
+    STDERR.puts "command not recognized #{ARGV[0]}"
+    exit 1
+  end
+#
+# Do hadoop jar commands (run map reduce)
+when 'jar':
+  ARGV.shift
+  jar = ARGV[0]
+  ARGV.shift
+  file = []
+  reducers = 1
+  while ARGV.size > 0
+    case ARGV[0]
+    when '-input':
+      indir = ARGV[1]; 2.times {ARGV.shift}
+    when '-output':
+      outdir = ARGV[1]; 2.times {ARGV.shift}
+    when '-mapper':
+      mapper = ARGV[1]; 2.times {ARGV.shift}
+    when '-reducer':
+      reducer = ARGV[1]; 2.times {ARGV.shift}
+    when '-jobconf':
+      jobconf = ARGV[1]; 2.times {ARGV.shift}
+      if jobconf =~ /mapred.reduce.tasks=([\d]*)/
+        reducers = $1.to_i
+      end
+    when '-file':
+      file << ARGV[1]; 2.times {ARGV.shift}
+    end 
+  end
+  system("hadoop fs -mkdir #{outdir}")
+  # Simulate hadoop by running mapper, then sort, then run reducer.
+  cmd = "ls #{HADOOP_DIR}/#{indir}|while read line;do #{mapper} < #{HADOOP_DIR}/#{indir}/$line;done|sort|#{reducer} >#{HADOOP_DIR}/#{outdir}/part-00000"
+  #puts "running: #{cmd}"
+  system cmd
+else
+  STDERR.puts "*** hadoop #{ARGV.join(' ')}"
+  exit 1
+end
