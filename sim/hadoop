@@ -109,7 +109,7 @@ when 'jar':
   end
   system("hadoop fs -mkdir #{outdir}")
   # Simulate hadoop by running mapper, then sort, then run reducer.
-  cmd = "ls #{HADOOP_DIR}/#{indir}|while read line;do #{mapper} < #{HADOOP_DIR}/#{indir}/$line;done|sort|#{reducer} >#{HADOOP_DIR}/#{outdir}/part-00000"
+  cmd = "ls #{HADOOP_DIR}/#{indir}|while read line;do #{mapper} < #{HADOOP_DIR}/#{indir}/$line;done|LC_ALL=C sort|#{reducer} >#{HADOOP_DIR}/#{outdir}/part-00000"
   #puts "running: #{cmd}"
   system cmd
 else

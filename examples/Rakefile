@@ -1,9 +1,9 @@
 require 'pp'
 # add mrtoolkit to $RUBYLIB
-if ENV['RUBYLIB]
-  ENV['RUBYLIB'] = ENV['RUBYLIB'].split(':').concat(['../mrtoolkit']).uniq.join(':')
+if ENV['RUBYLIB']
+  ENV['RUBYLIB'] = ENV['RUBYLIB'].split(':').concat(['../lib']).uniq.join(':')
 else
-  ENV['RUBYLIB] = '../mrtoolkit'
+  ENV['RUBYLIB'] = '../lib'
 end
 # add everything in $RUBYLIB to search path
 ENV['RUBYLIB'].split(':').each {|f| $:.concat([f]) unless $:.include?(f)}
