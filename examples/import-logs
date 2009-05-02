@@ -1,0 +1,14 @@
+#! /bin/bash
+
+# Creates log files in HDFS.
+# All files in sample-data/raw-logs are processed and
+#  stored with the proper delimiters for use with streaming.
+
+hadoop fs -rmr logs
+hadoop fs -mkdir logs
+for i in ../sample-data/raw-logs/*
+do
+  ruby import.rb <$i >/tmp/import
+  f=`basename $i`
+  hadoop fs -put /tmp/import logs/$f
+done

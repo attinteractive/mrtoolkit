@@ -1,0 +1,12 @@
+This contains:
+  logs		apache log files
+  import-logs	imports log files to hdfs (uses hadoop fs)
+  import.rb	does the actual parsing
+
+It also contains some mrtoolkit programs that make use of the
+imported logs files:
+  ip.rb		summarizes the usage by IP address
+  hour.rb	counts hits per hour over multiple days
+  section.rb	counts hits by section (top level directory)
+  top-file.rb	shows hits for top 10 files
+

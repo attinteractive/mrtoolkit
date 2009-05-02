@@ -1,0 +1,52 @@
+require 'pp'
+# add mrtoolkit to $RUBYLIB
+if ENV['RUBYLIB]
+  ENV['RUBYLIB'] = ENV['RUBYLIB'].split(':').concat(['../mrtoolkit']).uniq.join(':')
+else
+  ENV['RUBYLIB] = '../mrtoolkit'
+end
+# add everything in $RUBYLIB to search path
+ENV['RUBYLIB'].split(':').each {|f| $:.concat([f]) unless $:.include?(f)}
+
+require 'mrtoolkit'
+require 'time'
+
+
+def outfiles(base) 
+  "out/#{base}/part-*"
+end
+
+
+######################################################################
+desc "import data to hdfs"
+task "import" do
+  system "import-logs"
+end
+
+######################################################################
+desc "traffic by IP address"
+file "ips" do
+  system "ruby ip.rb"
+  system "cat #{outfiles('ip')}|sort -nr -k2 >ips"
+end
+
+######################################################################
+desc "traffic by hour"
+file "hours" do
+  system "ruby hour.rb"
+  system "cat #{outfiles('hour')}|sort -n >hours"
+end
+
+######################################################################
+desc "traffic by section"
+file "sections" do
+  system "ruby section.rb"
+  system "cat #{outfiles('section')}|sort -nr -k2 >sections"
+end
+
+######################################################################
+desc "top 10 files"
+file "top-files" do
+  system "ruby top-file.rb"
+  system "cat #{outfiles('top-file')} >top-files"
+end
