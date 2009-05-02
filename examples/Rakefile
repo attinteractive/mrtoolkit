@@ -18,6 +18,13 @@ end
 
 
 ######################################################################
+desc "clean up"
+task "clean" do
+  to_clean = %w{hour hours ip ips section sections top-file top-files}
+  to_clean.each {|f| system "rm -rf #{f}"}
+end
+
+######################################################################
 desc "import data to hdfs"
 task "import" do
   system "import-logs"
