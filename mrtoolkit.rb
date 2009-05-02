@@ -533,7 +533,7 @@ class MaxUniqueSumReduce < ReduceBase
       @pool << [@last, @sum]
       sort_pool
     elsif @sum > @pool[-1][1]
-      @pool[-1] = [input.key, input.value.to_i]
+      @pool[-1] = [@last, @sum]
       sort_pool
     end  
     nil
