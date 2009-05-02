@@ -5,7 +5,7 @@ require 'regression'
 ##############################
 # Log example.
 #
-# Reformsts the date and time into one field.
+# Reformats the date and time into one field.
 # Reducer adds an extra column
 
 class LogMap < MapBase

@@ -21,7 +21,7 @@
 # HADOOP_HOME must be set.
 # It might be necessary to change HADOOP_STREAMING_VERSION if the version changes.
 
-HADOOP_STREAMING_VERSION="0.18.2"
+HADOOP_STREAMING_VERSION="0.20.0"
 
 HADOOP_HOME=ENV['HADOOP_HOME']
 HADOOP_STREAMING="#{HADOOP_HOME}/contrib/streaming/hadoop-#{HADOOP_STREAMING_VERSION}-streaming.jar"
