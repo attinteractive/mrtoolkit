@@ -121,7 +121,7 @@ class MapBase < Stage
     nil
   end
   # Called at the end of map.
-  def process_end(input, output)
+  def process_end(dummy, output)
     nil
   end
 
@@ -134,7 +134,7 @@ class MapBase < Stage
       input = new_input(line)
       process_step(:process, input)
     end
-    process_step(:process_end, input)
+    process_step(:process_end, nil)
   end
 end
 
@@ -180,7 +180,7 @@ class ReduceBase < Stage
     nil
   end
   # Called at the end of reduction.
-  def process_end(input, output)
+  def process_end(dummy, output)
     nil
   end
 
@@ -212,8 +212,8 @@ class ReduceBase < Stage
     process_step(:process_init, input)
     process_step(:process_each, input)
   end
-  def process_end_internal(input)
-    process_step(:process_term, input) if @last
+  def process_end_internal(dummy)
+    process_step(:process_term, nil) if @last
   end  
 
   # Run the reducer.
@@ -232,8 +232,8 @@ class ReduceBase < Stage
       process_internal(input)
       process_step(:process, input)
     end
-    process_end_internal(input)
-    process_step(:process_end, input)
+    process_end_internal(nil)
+    process_step(:process_end, nil)
   end
 end
 
@@ -261,14 +261,43 @@ class CopyMap < MapBase
   end
 end
 
+# Map selects according to a RE
+class SelectMap < MapBase
+  def initialize(*args)
+    raise ArgumentError if args.size < 2
+    @re = args[0]
+    @field = args[1]
+    if args[2]
+      @n = args[2].to_i - 1
+    else
+      @n = 0
+    end
+  end
+  def declare
+    (0..@n).each {|i| field "col#{i}"}
+
+    (0..@n).each {|i| emit "col#{i}"}
+  end
+
+  def process(input, output)
+    if input[@field] =~ @re
+      copy_struct(input, output)
+    end
+    output
+  end
+end
+
 # Reducer collects all values
 # Outputs as many lines as input
-# Init with number of fields to copy.
-# Optional second arg is the number of fields to skip.
+# Init with number of fields to copy (default 1).
+# Optional second arg is the number of initial fields to skip.
 class CopyReduce < ReduceBase
   def initialize(*args)
-    raise ArgumentError if args.size < 1
-    @n = args[0].to_i - 1
+    if args[0]
+      @n = args[0].to_i - 1
+    else
+      @n = 0
+    end
     if args[1]
       @m = args[1].to_i - 1
     else
@@ -303,13 +332,16 @@ class UniqueReduce < ReduceBase
 end
 
 # Reducer sums given fields
-# Must specify how many fields to sum
-# May optionally specify how many fields to skip
+# Specify how many fields to sum (default 1).
+# May optionally specify how many initial fields to skip
 # Outputs one line of sums
 class SumReduce < ReduceBase
   def initialize(*args)
-    raise ArgumentError if args.size < 1
-    @n = args[0].to_i - 1
+    if args[0]
+      @n = args[0].to_i - 1
+    else
+      @n = 0
+    end
     if args[1]
       @m = args[1].to_i - 1
     else
@@ -320,7 +352,7 @@ class SumReduce < ReduceBase
     (0..@m).each {|i| field "skip#{i}"}
     (0..@n).each {|i| field "count#{i}"}
 
-    (0..@n).each {|i| emit "count#{i}"}
+    (0..@n).each {|i| emit "sum#{i}"}
   end
 
   def process_begin(dummy, output)
@@ -331,18 +363,21 @@ class SumReduce < ReduceBase
     (0..@n).each {|i| @sum[i] += input[i+@m+1].to_f}
     nil
   end
-  def process_end(input, output)
+  def process_end(dummy, output)
     (0..@n).each {|i| output[i] = @sum[i]}
     output
   end
 end
 
-# Reducer sums within each unique value of the first field.
+# this reducer sums within each unique value of the first field.
 # Outputs one line of sums for each unique value of the first field.
 class UniqueSumReduce < ReduceBase
   def initialize(*args)
-    raise ArgumentError if args.size < 1
-    @n = args[0].to_i - 1
+    if args[0]
+      @n = args[0].to_i - 1
+    else
+      @n = 0
+    end
     if args[1]
       @m = args[1].to_i - 1
     else
@@ -352,7 +387,7 @@ class UniqueSumReduce < ReduceBase
 
   def declare
     field :unique
-    (0..@n).each {|i| field "sum#{i}"}
+    (0..@n).each {|i| field "count#{i}"}
     (0..@m).each {|i| field "extra#{i}"}
 
     emit :value
@@ -479,7 +514,7 @@ class SampleReduce < ReduceBase
     @n += 1
     nil
   end
-  def process_end(dummy1, output)
+  def process_end(dummy, output)
     output = []
     @pool.each do |elem|
       item = new_output
@@ -495,8 +530,11 @@ end
 # TODO store rest of fields too
 class MaxReduce < ReduceBase
   def initialize(*args)
-    raise ArgumentError if args.size < 1
-    @m = args[0].to_i
+    if args[0]
+      @m = args[0].to_i
+    else
+      @m = 1
+    end
   end
 
   def declare
@@ -507,8 +545,12 @@ class MaxReduce < ReduceBase
     emit :value
   end
 
+  def compare(x, y)
+    y <=> x
+  end
+
   def sort_pool
-    @pool.sort! {|x, y| y[1] <=> x[1]}
+    @pool.sort! {|x, y| compare(x[1], y[1])}
   end
 
   def process_begin(dummy, output)
@@ -570,7 +612,7 @@ class MaxUniqueSumReduce < ReduceBase
     @sum += input.value.to_i
     nil
   end
-  def process_term(input, output)
+  def process_term(dummy, output)
     if @pool.size < @m
       @pool << [@last, @sum]
       sort_pool
@@ -610,8 +652,11 @@ end
 # By default, drops the first column.
 class UniqueFirstReduce < ReduceBase
   def initialize(*args)
-    raise ArgumentError if args.size < 1
-    @n = args[0].to_i - 1
+    if args[0]
+      @n = args[0].to_i - 1
+    else
+      @n = 0
+    end
     if args[1]
       @m = args[1].to_i - 1
     else
@@ -676,6 +721,12 @@ class JobBase
   end
   def extra ex
     @extras << ex
+  end
+  def map_opt n, v
+    @map_opts[n] = v
+  end
+  def reduce_opt n, v
+    @reduce_opts[n] = v
   end
   # This gathers the declarations and stores in a stage record.
   def add_stage

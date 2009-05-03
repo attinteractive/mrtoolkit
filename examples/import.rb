@@ -1,5 +1,3 @@
-require 'pp'
-
 # Import combined log format
 #
 # Parse and remove delimiters.
@@ -16,9 +14,7 @@ class ImportLogFile
   def parse_all(fp)
     fp.each_line do |line|
       res = parse(line)
-      if res
-        puts res.join("\t")
-      end
+      puts res.join("\t")if res
     end
   end
 end
