@@ -38,6 +38,13 @@ file "ips" do
 end
 
 ######################################################################
+desc "traffic by IP address"
+file "ip-sizes" do
+  system "ruby ip-size.rb"
+  system "cat #{outfiles('ip-size')}|sort -nr -k2 >ip-sizes"
+end
+
+######################################################################
 desc "traffic by hour"
 file "hours" do
   system "ruby hour.rb"

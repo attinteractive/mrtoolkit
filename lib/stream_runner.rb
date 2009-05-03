@@ -21,10 +21,11 @@
 # HADOOP_HOME must be set.
 # It might be necessary to change HADOOP_STREAMING_VERSION if the version changes.
 
-HADOOP_STREAMING_VERSION="0.20.0"
+streaming_version = ENV['HADOOP_STREAMING_VERSION']
+streaming_version ="0.20.0" unless streaming_version
 
 HADOOP_HOME=ENV['HADOOP_HOME']
-HADOOP_STREAMING="#{HADOOP_HOME}/contrib/streaming/hadoop-#{HADOOP_STREAMING_VERSION}-streaming.jar"
+HADOOP_STREAMING="#{HADOOP_HOME}/contrib/streaming/hadoop-#{streaming_version}-streaming.jar"
 
 class StreamRunner
   def expand_path(file)

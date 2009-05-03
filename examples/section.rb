@@ -1,6 +1,6 @@
 require 'mrtoolkit'
 
-class SectionMap < MapBase
+class MainMap < MapBase
   def declare
     # declare log fields
     field :ip
@@ -10,14 +10,14 @@ class SectionMap < MapBase
     field :request
     field :status
     field :result_size
-    field :referrer
+    field :referer
     field :ua
 
     emit :section
     emit :count
   end
   def process(input, output)
-    if input.request =~ /\/(\w*)\//
+    if input.request =~ /\/(\w+)\//
       output.section = $1
       output.count = 1
     end
@@ -26,8 +26,8 @@ class SectionMap < MapBase
 end
 
 class MainJob < JobBase
-  def stage1
-    mapper SectionMap
+  def job
+    mapper MainMap
     reducer UniqueSumReduce, 1
     indir "logs"
     outdir "section"

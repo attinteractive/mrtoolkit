@@ -13,14 +13,12 @@ class MainMap < MapBase
     field :referer
     field :ua
 
-    emit :path
-    emit :count
+    emit :ip
+    emit :size
   end
   def process(input, output)
-    if input.request =~ /GET\s+(\S+)\s/
-      output.path = $1
-      output.count = 1
-    end
+    output.ip = input.ip
+    output.size = input.result_size
     output
   end
 end
@@ -28,9 +26,9 @@ end
 class MainJob < JobBase
   def job
     mapper MainMap
-    reducer MaxUniqueSumReduce, 10
+    reducer UniqueSumReduce, 1
     indir "logs"
-    outdir "top-file"
+    outdir "ip-size"
   end
 end
 

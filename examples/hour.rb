@@ -1,6 +1,6 @@
 require 'mrtoolkit'
 
-class HourMap < MapBase
+class MainMap < MapBase
   def declare
     # declare log fields
     field :ip
@@ -10,7 +10,7 @@ class HourMap < MapBase
     field :request
     field :status
     field :result_size
-    field :referrer
+    field :referer
     field :ua
 
     emit :hour
@@ -47,8 +47,8 @@ class HourMap < MapBase
 end
 
 class MainJob < JobBase
-  def stage1
-    mapper HourMap
+  def job
+    mapper MainMap
     reducer UniqueSumReduce, 1
     indir "logs"
     outdir "hour"

@@ -2,20 +2,6 @@
 
 # Simulate hadoop well enough to do local testing.
 
-# This is where files are in hadoop.
-HADOOP_PATH_PREFIX = "/user/chayden"
-# This is where they are in the simulation.
-HADOOP_DIR = "."
-
-# Strip off HADOOP_PATH_PREFIX from the path (if present).
-# Then put HADOOP_DIR on the front.
-def expand_path(path)
-  if path =~ Regexp.new(Regexp.escape(HADOOP_PATH_PREFIX + "/") + "(.*)")
-    path = $1
-  end
-  "#{HADOOP_DIR}/#{path}"
-end
-
 case ARGV[0]
 # 
 # Do hadoop fs commands
@@ -28,21 +14,21 @@ when 'fs':
       STDERR.puts "missing argument"
       exit 1
     end
-    system("rm -rf #{expand_path(dest)}")
+    system("rm -rf #{dest}")
   when '-rm':
     dest = ARGV[1]
     if dest.nil?
       STDERR.puts "missing argument"
       exit 1
     end
-    system("rm -f #{expand_path(dest)}")
+    system("rm -f #{dest}")
   when '-mkdir':
     dest = ARGV[1]
     if dest.nil?
       STDERR.puts "missing argument"
       exit 1
     end
-    system("mkdir -p #{expand_path(dest)}")
+    system("mkdir -p #{dest}")
   when '-copyFromLocal':
   when '-put':
     src = ARGV[1]
@@ -51,15 +37,15 @@ when 'fs':
       STDERR.puts "missing argument"
       exit 1
     end
-   system("cp #{src} #{expand_path(dest)}")
+   system("cp #{src} #{dest}")
   when '-cat':
     src = ARGV[1]
     if src.nil? 
       STDERR.puts "missing argument"
       exit 1
     end
-    if  File.exists?(expand_path(src))
-      system("cat #{expand_path(src)}")
+    if  File.exists?(src)
+      system("cat #{src}")
     end
   when '-ls':
     dest = ARGV[1]
@@ -72,9 +58,9 @@ when 'fs':
     dest = ARGV[1]
     if dest == '/user'
       # special test data
-      system("cat #{HADOOP_DIR}/sample-ls-data")
+      system("cat sample-ls-data")
     else
-      system("cd #{HADOOP_DIR};ls -lR '--time-style=+%Y-%m-%d %H:%M' #{dest}")
+      system("ls -lR '--time-style=+%Y-%m-%d %H:%M' #{dest}")
     end
   else
     STDERR.puts "command not recognized #{ARGV[0]}"
@@ -109,7 +95,7 @@ when 'jar':
   end
   system("hadoop fs -mkdir #{outdir}")
   # Simulate hadoop by running mapper, then sort, then run reducer.
-  cmd = "ls #{HADOOP_DIR}/#{indir}|while read line;do #{mapper} < #{HADOOP_DIR}/#{indir}/$line;done|LC_ALL=C sort|#{reducer} >#{HADOOP_DIR}/#{outdir}/part-00000"
+  cmd = "ls #{indir}|while read line;do #{mapper} < #{indir}/$line;done|LC_ALL=C sort|#{reducer} >#{outdir}/part-00000"
   #puts "running: #{cmd}"
   system cmd
 else

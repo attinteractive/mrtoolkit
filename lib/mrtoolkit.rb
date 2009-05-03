@@ -75,8 +75,10 @@ class Stage
   def process_step(fun, input = nil)
     begin
       out = send(fun, input, new_output)
-      out = [out] unless out.class == Array
-      out.each {|o| write_out(o)}
+      if out
+        out = [out] unless out.class == Array
+        out.each {|o| write_out(o)}
+      end
     rescue StandardError
       STDERR.puts "Error: #{$!}"
       @errors += 1
@@ -242,8 +244,11 @@ end
 # Map just copies its fields
 class CopyMap < MapBase
   def initialize(*args)
-    raise ArgumentError if args.size < 1
-    @n = args[0].to_i - 1
+    if args.size < 1
+      @n = 0
+    else
+      @n = args[0].to_i - 1
+    end
   end
   def declare
     (0..@n).each {|i| field "col#{i}"}
@@ -367,6 +372,43 @@ class UniqueSumReduce < ReduceBase
   def process_term(dummy, output)
     output.value = @last
     (0..@n).each {|i| output[i+1] = @sum[i]}
+    (0..@m).each {|i| output[i+@n+2] = @extra[i]}
+    output
+  end
+end
+
+# Reducer counts within each unique value of the first field.
+# Outputs one line of counts for each unique value of the first field.
+class UniqueCountReduce < ReduceBase
+  def initialize(*args)
+    if args[0]
+      @m = args[0].to_i - 1
+    else
+      @m = -1
+    end
+  end
+
+  def declare
+    field :unique
+    (0..@m).each {|i| field "extra#{i}"}
+
+    emit :value
+    emit :count
+    (0..@m).each {|i| emit "extra#{i}"}
+  end
+  def process_init(input, output)
+    @count = 0
+    @extra = Array.new(@m+1)
+    nil
+  end
+  def process_each(input, output)
+    @count += 1
+    (0..@m).each {|i| @extra[i] = input[i+1]}
+    nil
+  end
+  def process_term(dummy, output)
+    output.value = @last
+    output.count = @count
     (0..@m).each {|i| output[i+@n+2] = @extra[i]}
     output
   end
@@ -653,7 +695,7 @@ class JobBase
   # programs.
   def prepare
     ms = self.class.instance_methods.find_all do |m|
-      m =~ /^stage/
+      m =~ /(^stage)|(^job$)/
     end
     ms.sort.each do |m|
       self.method(m).call
