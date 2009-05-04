@@ -7,8 +7,12 @@ end
 # add everything in $RUBYLIB to search path
 ENV['RUBYLIB'].split(':').each {|f| $:.concat([f]) unless $:.include?(f)}
 
-require 'mrtoolkit'
-
+######################################################################
+desc "clean up"
+task "clean" do
+  to_clean = %w{test-out}
+  to_clean.each {|f| system "rm -rf #{f}"}
+end
 ######################################################################
 desc "unit tests"
 task :test do
