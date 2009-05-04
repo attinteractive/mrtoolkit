@@ -264,9 +264,13 @@ end
 # Map selects according to a RE
 class SelectMap < MapBase
   def initialize(*args)
-    raise ArgumentError if args.size < 2
+    raise ArgumentError if args.size < 1
     @re = args[0]
-    @field = args[1]
+    if args[1]
+      @field = args[1]
+    else
+      @field = 0
+    end
     if args[2]
       @n = args[2].to_i - 1
     else
@@ -281,9 +285,9 @@ class SelectMap < MapBase
 
   def process(input, output)
     if input[@field] =~ @re
-      copy_struct(input, output)
+      return copy_struct(input, output)
     end
-    output
+    nil
   end
 end
 
@@ -673,7 +677,6 @@ class UniqueFirstReduce < ReduceBase
   # copy over all dest fields
   def process_init(input, output)
     copy_struct(input, output, @m+1)
-    output
   end
 end
 

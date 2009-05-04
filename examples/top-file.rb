@@ -20,8 +20,9 @@ class MainMap < MapBase
     if input.request =~ /GET\s+(\S+)\s/
       output.path = $1
       output.count = 1
+      return output
     end
-    output
+    nil
   end
 end
 

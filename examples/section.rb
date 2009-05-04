@@ -20,8 +20,9 @@ class MainMap < MapBase
     if input.request =~ /\/(\w+)\//
       output.section = $1
       output.count = 1
+      return output
     end
-    output
+    nil
   end
 end
 

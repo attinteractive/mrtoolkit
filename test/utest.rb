@@ -44,7 +44,7 @@ class LogReduce < ReduceBase
 end
 
 class LogJob < JobBase
-  def stage1
+  def job
     mapper LogMap
     reducer LogReduce
     infiles "test-in/test1-in"
@@ -119,7 +119,7 @@ class MySumReduce < ReduceBase
 end
 
 class SumJob < JobBase
-  def stage1
+  def job
     mapper SumMap
     reducer MySumReduce
     infiles "test-in/test2-in"
@@ -189,7 +189,7 @@ class MyMinReduce < ReduceBase
 end
 
 class MyMinJob < JobBase
-  def stage1
+  def job
     mapper MinMap
     reducer MyMinReduce
     infiles "test-in/test3-in"
@@ -213,7 +213,7 @@ end
 # This is the previous one, but with a standard reducer.
 
 class CollectJob < JobBase
-  def stage1
+  def job
     mapper MinMap
     reducer CopyReduce, 1
     infiles "test-in/test3-in"
@@ -241,7 +241,7 @@ end
 # as the custom reducer.
 
 class UniqueJob < JobBase
-  def stage1
+  def job
     mapper MinMap
     reducer UniqueReduce
     infiles "test-in/test3-in"
@@ -267,7 +267,7 @@ end
 
 
 class GSumJob < JobBase
-  def stage1
+  def job
     mapper CopyMap, 3
     reducer SumReduce, 3
     infiles "test-in/test6-in"
@@ -284,8 +284,26 @@ class TestMRToolkit < Test::Unit::TestCase
   end
 end
 
+class SelectJob < JobBase
+  def job
+    mapper SelectMap, /^10[23]/
+    reducer CopyReduce
+    infiles "test-in/test5-in"
+    outfiles "test-out"
+  end
+end
+
+class TestMRToolkit < Test::Unit::TestCase
+  def test_select
+    SelectJob.run_test_command
+    out = File.read("test-out")
+    expected = "102\n102\n102\n102\n103\n"
+    assert_equal(expected, out)
+  end
+end
+
 class SampleJob < JobBase
-  def stage1
+  def job
     mapper CopyMap, 3
     reducer SampleReduce, 10
     infiles "test-in/test7-in"
@@ -304,7 +322,7 @@ class TestMRToolkit < Test::Unit::TestCase
 end
 
 class MaxJob < JobBase
-  def stage1
+  def job
     mapper CopyMap, 3
     reducer MaxReduce, 3
     infiles "test-in/test4-in"
@@ -322,7 +340,7 @@ class TestMRToolkit < Test::Unit::TestCase
 end
 
 class MinJob < JobBase
-  def stage1
+  def job
     mapper CopyMap, 3
     reducer MinReduce, 3
     infiles "test-in/test4-in"
@@ -339,8 +357,44 @@ class TestMRToolkit < Test::Unit::TestCase
   end
 end
 
+class UniqueSumJob < JobBase
+  def job
+    mapper CopyMap, 2
+    reducer UniqueSumReduce
+    infiles "test-in/test5-in"
+    outfiles "test-out"
+  end
+end
+
+class TestMRToolkit < Test::Unit::TestCase
+  def test_unique_sum
+    UniqueSumJob.run_test_command
+    out = File.read("test-out")
+    expected = "100\t3\n101\t2\n102\t4\n103\t1\n104\t2\n"
+    assert_equal(expected, out)
+  end
+end
+
+class UniqueCountJob < JobBase
+  def job
+    mapper CopyMap
+    reducer UniqueCountReduce
+    infiles "test-in/test5-in"
+    outfiles "test-out"
+  end
+end
+
+class TestMRToolkit < Test::Unit::TestCase
+  def test_unique_count
+    UniqueCountJob.run_test_command
+    out = File.read("test-out")
+    expected = "100\t3\n101\t2\n102\t4\n103\t1\n104\t2\n"
+    assert_equal(expected, out)
+  end
+end
+
 class MaxUniqueSumJob < JobBase
-  def stage1
+  def job
     mapper CopyMap, 3
     reducer MaxUniqueSumReduce, 3
     infiles "test-in/test5-in"
@@ -358,7 +412,7 @@ class TestMRToolkit < Test::Unit::TestCase
 end
 
 class UniqueIndexedSumJob < JobBase
-  def stage1
+  def job
     mapper CopyMap, 3
     reducer UniqueIndexedSumReduce, 3
     infiles "test-in/test8-in"
@@ -376,7 +430,7 @@ class TestMRToolkit < Test::Unit::TestCase
 end
 
 class UniqueFirstJob < JobBase
-  def stage1
+  def job
     mapper CopyMap, 4
     reducer UniqueFirstReduce, 3, 1
     infiles "test-in/test9-in"
@@ -411,3 +465,5 @@ class TestRegression < Test::Unit::TestCase
     assert_equal(0, reg.offset)
   end
 end
+
+
