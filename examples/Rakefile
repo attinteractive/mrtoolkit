@@ -20,7 +20,7 @@ end
 ######################################################################
 desc "clean up"
 task "clean" do
-  to_clean = %w{hour hours ip ips section sections top-file top-files ip-size ip-sizes out}
+  to_clean = %w{hour hours ip ips section sections top-file top-files ip-size ip-sizes ip-result ip-results out}
   to_clean.each {|f| system "rm -rf #{f}"}
 end
 
@@ -42,6 +42,20 @@ desc "returned result size by IP address"
 file "ip-sizes" do
   system "ruby ip-size.rb"
   system "cat #{outfiles('ip-size')}|sort -nr -k2 >ip-sizes"
+end
+
+######################################################################
+desc "show all combinations of ip and user agent"
+file "ip-uas" do
+  system "ruby ip-ua.rb"
+  system "cat #{outfiles('ip-ua')}|cut -f 2-4|sort -k2 -k3 >ip-uas"
+end
+
+######################################################################
+desc "show all combinations of ip and result"
+file "ip-results" do
+  system "ruby ip-result.rb"
+  system "cat #{outfiles('ip-result')}|sort -k1 -k2 >ip-results"
 end
 
 ######################################################################

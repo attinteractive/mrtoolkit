@@ -373,7 +373,7 @@ class SumReduce < ReduceBase
   end
 end
 
-# this reducer sums within each unique value of the first field.
+# This reducer sums within each unique value of the first field.
 # Outputs one line of sums for each unique value of the first field.
 class UniqueSumReduce < ReduceBase
   def initialize(*args)
@@ -448,13 +448,14 @@ class UniqueCountReduce < ReduceBase
   def process_term(dummy, output)
     output.value = @last
     output.count = @count
-    (0..@m).each {|i| output[i+@n+2] = @extra[i]}
+    (0..@m).each {|i| output[i+2] = @extra[i]}
     output
   end
 end
 
 # Reducer works on groups where the first field is the same.
-# The output is the count of each value of the second field.
+# For each distinct value of the second field, sum up the values
+#  of the third field.
 class UniqueIndexedSumReduce < ReduceBase
   def declare
     field :unique
@@ -473,6 +474,40 @@ class UniqueIndexedSumReduce < ReduceBase
     index = input.index
     @sum[index] = 0 unless @sum.has_key?(index) 
     @sum[index] += input.value.to_i 
+    nil
+  end
+  def process_term(dummy, output)
+    output = []
+    @sum.each do |index, value|
+      item = new_output
+      item.unique = @last
+      item.index = index
+      item.value = value
+      output << item
+    end
+    output
+  end
+end
+
+# Reducer works on groups where the first field is the same.
+# Count the number of distinct occurances of the second field.
+class UniqueIndexedCountReduce < ReduceBase
+  def declare
+    field :unique
+    field :index
+
+    emit :unique
+    emit :index
+    emit :value
+  end
+  def process_init(input, output)
+    @sum = {}
+    nil
+  end
+  def process_each(input, output)
+    index = input.index
+    @sum[index] = 0 unless @sum.has_key?(index) 
+    @sum[index] += 1
     nil
   end
   def process_term(dummy, output)
@@ -830,7 +865,8 @@ class JobBase
     end
   end
 
-  def self.run_command(filename)
+  def self.run_command(filename = nil)
+    filename = $0 unless filename    
     if ARGV[0] == '-s'
       ARGV.shift
       class_name = ARGV.shift
@@ -852,7 +888,7 @@ end
 at_exit do
   ObjectSpace.each_object(Class) do |klass|
     if klass.name =~ /^\w+Job$/
-      klass.run_command($0)
+      klass.run_command
     end
   end
   exit 0
