@@ -825,7 +825,7 @@ class JobBase
         build_command(fname, map_class, map_args),
         build_command(fname, reduce_class, reduce_args),
         reducers,
-        ['mrtoolkit.rb', 'stream_runner.rb'] + extras, 
+        [__FILE__, 'stream_runner.rb'] + extras, 
 	map_opts, reduce_opts, opts)
     end
   end
@@ -848,3 +848,12 @@ class JobBase
   end
 end
 
+# At exit, call run_command in each class of the form xxxJob.
+at_exit do
+  ObjectSpace.each_object(Class) do |klass|
+    if klass.name =~ /^\w+Job$/
+      klass.run_command($0)
+    end
+  end
+  exit 0
+end

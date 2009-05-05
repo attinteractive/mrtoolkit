@@ -8,6 +8,3 @@ class MainJob < JobBase
     outdir "ip"
   end
 end
-
-
-MainJob.run_command(__FILE__)

@@ -31,6 +31,3 @@ class MainJob < JobBase
     outdir "ip-size"
   end
 end
-
-
-MainJob.run_command(__FILE__)

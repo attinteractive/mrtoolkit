@@ -34,6 +34,3 @@ class MainJob < JobBase
     outdir "top-file"
   end
 end
-
-
-MainJob.run_command(__FILE__)

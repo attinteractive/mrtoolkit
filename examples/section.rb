@@ -35,5 +35,3 @@ class MainJob < JobBase
   end
 end
 
-
-MainJob.run_command(__FILE__)
