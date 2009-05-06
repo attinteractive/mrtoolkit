@@ -49,7 +49,7 @@ end
 class MainJob < JobBase
   def job
     mapper MainMap
-    reducer UniqueSumReduce, 1
+    reducer UniqueSumReduce
     indir "logs"
     outdir "hour"
   end
