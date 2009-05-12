@@ -49,6 +49,7 @@ class LogJob < JobBase
     reducer LogReduce
     infiles "test-in/test1-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -124,6 +125,7 @@ class SumJob < JobBase
     reducer MySumReduce
     infiles "test-in/test2-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -194,6 +196,7 @@ class MyMinJob < JobBase
     reducer MyMinReduce
     infiles "test-in/test3-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -218,6 +221,7 @@ class CollectJob < JobBase
     reducer CopyReduce, 1
     infiles "test-in/test3-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -246,6 +250,7 @@ class UniqueJob < JobBase
     reducer UniqueReduce
     infiles "test-in/test3-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -272,6 +277,7 @@ class GSumJob < JobBase
     reducer SumReduce, 3
     infiles "test-in/test6-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -290,6 +296,7 @@ class SelectJob < JobBase
     reducer CopyReduce
     infiles "test-in/test5-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -308,6 +315,7 @@ class SampleJob < JobBase
     reducer SampleReduce, 10
     infiles "test-in/test7-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -327,6 +335,7 @@ class MaxJob < JobBase
     reducer MaxReduce, 3
     infiles "test-in/test4-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -345,6 +354,7 @@ class MinJob < JobBase
     reducer MinReduce, 3
     infiles "test-in/test4-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -363,6 +373,7 @@ class UniqueSumJob < JobBase
     reducer UniqueSumReduce
     infiles "test-in/test5-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -381,6 +392,7 @@ class UniqueCountJob < JobBase
     reducer UniqueCountReduce
     infiles "test-in/test5-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -399,6 +411,7 @@ class MaxUniqueSumJob < JobBase
     reducer MaxUniqueSumReduce, 3
     infiles "test-in/test5-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -417,6 +430,7 @@ class UniqueIndexedSumJob < JobBase
     reducer UniqueIndexedSumReduce, 3
     infiles "test-in/test8-in"
     outfiles "test-out"
+    testing true
   end
 end
 
@@ -435,6 +449,7 @@ class UniqueFirstJob < JobBase
     reducer UniqueFirstReduce, 3, 1
     infiles "test-in/test9-in"
     outfiles "test-out"
+    testing true
   end
 end
 
