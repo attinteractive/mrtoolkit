@@ -20,7 +20,7 @@ end
 ######################################################################
 desc "clean up"
 task "clean" do
-  to_clean = %w{hour hours ip ips section sections top-file top-files ip-size ip-sizes ip-result ip-results out}
+  to_clean = %w{hour hours ip ips section sections top-file top-files ip-size ip-sizes ip-result ip-results ip-uas ip-ua out }
   to_clean.each {|f| system "rm -rf #{f}"}
 end
 
