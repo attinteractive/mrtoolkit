@@ -739,6 +739,7 @@ class JobBase
     @map_opts = {}
     @in_dirs = []
     @extras = []
+    @testing = false
   end
   def reducer reduce_class, *args
     @reduce_class = reduce_class
@@ -760,6 +761,9 @@ class JobBase
   def extra ex
     @extras << ex
   end
+  def testing val
+    @testing = val
+  end
   def map_opt n, v
     @map_opts[n] = v
   end
@@ -776,7 +780,7 @@ class JobBase
     end       
     @stages << [@map_class, @map_args, @map_opts,
       @reduce_class, @reduce_args, @reduce_opts, 
-      @in_dirs, @out_dir, @reducers, @extras]
+      @in_dirs, @out_dir, @reducers, @extras, @testing]
   end
 
   # For each method in the class starting with "stage", call the method,
@@ -801,7 +805,7 @@ class JobBase
     @stages.each do |s|
       map_class, map_args, map_opts, 
           reduce_class, reduce_args, reduce_opts,
-          in_dirs, out_dir, reducers, extras = *s
+          in_dirs, out_dir, reducers, extras, testing = *s
       mapper = map_class.new(*map_args)
       mapper.declare
       mapper.prepare
@@ -849,19 +853,22 @@ class JobBase
     opts
   end
 
+  # Run each state, but not if we are testing.
   def run(fname, opts)
     sr = StreamRunner.new
     out_dir = "out"
     @stages.each do |s|
       map_class, map_args, map_opts, 
           reduce_class, reduce_args, reduce_opts,
-          in_dirs, out_dir, reducers, extras = *s
-      sr.run_map_reduce(in_dirs, out_dir, 
-        build_command(fname, map_class, map_args),
-        build_command(fname, reduce_class, reduce_args),
-        reducers,
-        [__FILE__, 'stream_runner.rb'] + extras, 
-	map_opts, reduce_opts, opts)
+          in_dirs, out_dir, reducers, extras, testing = *s
+      unless testing
+        sr.run_map_reduce(in_dirs, out_dir, 
+          build_command(fname, map_class, map_args),
+          build_command(fname, reduce_class, reduce_args),
+          reducers,
+          [__FILE__, 'stream_runner.rb'] + extras, 
+          map_opts, reduce_opts, opts)
+	end
     end
   end
 
@@ -891,5 +898,4 @@ at_exit do
       klass.run_command
     end
   end
-  exit 0
 end
