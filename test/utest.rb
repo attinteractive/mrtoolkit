@@ -8,6 +8,8 @@ require 'regression'
 # Reformats the date and time into one field.
 # Reducer adds an extra column
 
+JobBase.testing(true)
+
 class LogMap < MapBase
   def declare
     field :date
@@ -49,13 +51,12 @@ class LogJob < JobBase
     reducer LogReduce
     infiles "test-in/test1-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_log
-    LogJob.run_test_command
+    LogJob.run_command
     out = File.read("test-out")
     expected = "2008-10-01T10:30:00\t1.2.3.4\tx\n" + 
                "2008-10-02T11:30:00\t1.2.3.5\tx\n"
@@ -125,13 +126,12 @@ class SumJob < JobBase
     reducer MySumReduce
     infiles "test-in/test2-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_sum
-    SumJob.run_test_command
+    SumJob.run_command
     out = File.read("test-out")
     expected = "4.0\t43.0\t1005.0\n"
     assert_equal(expected, out)
@@ -196,13 +196,12 @@ class MyMinJob < JobBase
     reducer MyMinReduce
     infiles "test-in/test3-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_min
-    MyMinJob.run_test_command
+    MyMinJob.run_command
     out = File.read("test-out")
     expected = "8460\t1\n" +
                "8461\t1\n" +
@@ -221,13 +220,12 @@ class CollectJob < JobBase
     reducer CopyReduce, 1
     infiles "test-in/test3-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_collect
-    CollectJob.run_test_command
+    CollectJob.run_command
     out = File.read("test-out")
     expected = "8460\n" +
                "8461\n" +
@@ -250,13 +248,12 @@ class UniqueJob < JobBase
     reducer UniqueReduce
     infiles "test-in/test3-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_unique
-    UniqueJob.run_test_command
+    UniqueJob.run_command
     out = File.read("test-out")
     expected = "8460\n" +
                "8461\n" +
@@ -277,13 +274,12 @@ class GSumJob < JobBase
     reducer SumReduce, 3
     infiles "test-in/test6-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_gsum
-    GSumJob.run_test_command
+    GSumJob.run_command
     out = File.read("test-out")
     expected = "12.0\t9.0\t8.0\n"
     assert_equal(expected, out)
@@ -296,13 +292,12 @@ class SelectJob < JobBase
     reducer CopyReduce
     infiles "test-in/test5-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_select
-    SelectJob.run_test_command
+    SelectJob.run_command
     out = File.read("test-out")
     expected = "102\n102\n102\n102\n103\n"
     assert_equal(expected, out)
@@ -315,14 +310,13 @@ class SampleJob < JobBase
     reducer SampleReduce, 10
     infiles "test-in/test7-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_sample
     srand 1234
-    SampleJob.run_test_command
+    SampleJob.run_command
     out = File.read("test-out")
     expected = "5\n20\n7\n12\n2\n8\n3\n16\n17\n18\n"
     assert_equal(expected, out)
@@ -335,13 +329,12 @@ class MaxJob < JobBase
     reducer MaxReduce, 3
     infiles "test-in/test4-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_max
-    MaxJob.run_test_command
+    MaxJob.run_command
     out = File.read("test-out")
     expected = "4\t10\n3\t3\n2\t2\n"
     assert_equal(expected, out)
@@ -354,13 +347,12 @@ class MinJob < JobBase
     reducer MinReduce, 3
     infiles "test-in/test4-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_min
-    MinJob.run_test_command
+    MinJob.run_command
     out = File.read("test-out")
     expected = "3\t3\n2\t2\n1\t1\n"
     assert_equal(expected, out)
@@ -373,13 +365,12 @@ class UniqueSumJob < JobBase
     reducer UniqueSumReduce
     infiles "test-in/test5-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_unique_sum
-    UniqueSumJob.run_test_command
+    UniqueSumJob.run_command
     out = File.read("test-out")
     expected = "100\t3\n101\t2\n102\t4\n103\t1\n104\t2\n"
     assert_equal(expected, out)
@@ -392,13 +383,12 @@ class UniqueCountJob < JobBase
     reducer UniqueCountReduce
     infiles "test-in/test5-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_unique_count
-    UniqueCountJob.run_test_command
+    UniqueCountJob.run_command
     out = File.read("test-out")
     expected = "100\t3\n101\t2\n102\t4\n103\t1\n104\t2\n"
     assert_equal(expected, out)
@@ -411,13 +401,12 @@ class MaxUniqueSumJob < JobBase
     reducer MaxUniqueSumReduce, 3
     infiles "test-in/test5-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_max_unique_sum
-    MaxUniqueSumJob.run_test_command
+    MaxUniqueSumJob.run_command
     out = File.read("test-out")
     expected = "102\t4\n100\t3\n101\t2\n"
     assert_equal(expected, out)
@@ -430,13 +419,12 @@ class UniqueIndexedSumJob < JobBase
     reducer UniqueIndexedSumReduce, 3
     infiles "test-in/test8-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_unique_indexed_sum
-    UniqueIndexedSumJob.run_test_command
+    UniqueIndexedSumJob.run_command
     out = File.read("test-out")
     expected = "100\t1000\t3\n100\t1001\t1\n200\t1000\t2\n200\t1001\t1\n"
     assert_equal(expected, out)
@@ -449,13 +437,12 @@ class UniqueFirstJob < JobBase
     reducer UniqueFirstReduce, 3, 1
     infiles "test-in/test9-in"
     outfiles "test-out"
-    testing true
   end
 end
 
 class TestMRToolkit < Test::Unit::TestCase
   def test_unique_first
-    UniqueFirstJob.run_test_command
+    UniqueFirstJob.run_command
     out = File.read("test-out")
     expected = "a\ta\ta\nx1\ty1\tz1\n"
     assert_equal(expected, out)
