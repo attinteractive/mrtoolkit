@@ -1,7 +1,15 @@
 = mrtoolkit
 
-Description goes here.
+MRToolkit provides a framework for building simple Map/Reduce jobs in just a few lines of code. You provide only the map and reduce logic, the framework does the rest. Or use one of the provided map or reduce tools, and write even less.
 
-== Copyright
+Map and reduce jobs are written in Ruby. MRToolkit was inspired by Google's Sawzall.
 
-Copyright (c) 2009 Nate Murray. See LICENSE for details.
+== Acknowledgements
+
+MRToolkit was inspired by Google's Sawzall. We wanted to make it even easier by making use of an existing language, rather than inventing a new one. Ruby was a perfect fit.
+
+The initial development of this software was supported by the New York Times, with the support and encouragement of Vadim Jelezniakov and Ranjit Prabhu.
+
+== This github repo
+
+This github repo is a mirror + patches to the mrtoolkit that is hosted on code.google.com: http://code.google.com/p/mrtoolkit/wiki/Introduction
