@@ -79,6 +79,7 @@ class StreamRunner
         "#{extras}"
     end
     cmd += " -verbose " if opts.has_key?(:verbose)
+    cmd += " #{opts[:hadoop_opts]}" if opts.has_key?(:hadoop_opts)
     puts cmd if opts.has_key?(:verbose)
     system(cmd)
   end

@@ -772,6 +772,10 @@ class JobBase
   def reduce_opt n, v
     @reduce_opts[n] = v
   end
+  def hadoop_opts name
+    @hadoop_opts = [] unless @hadoop_opts
+    @hadoop_opts << name
+  end
   # This gathers the declarations and stores in a stage record.
   def add_stage
     case
@@ -856,6 +860,7 @@ class JobBase
       map_class, map_args, map_opts, 
           reduce_class, reduce_args, reduce_opts,
           in_dirs, out_dir, reducers, extras = *s
+      opts = opts.merge({:hadoop_opts => @hadoop_opts.join(" ")}) if @hadoop_opts && @hadoop_opts.size > 0
       sr.run_map_reduce(in_dirs, out_dir, 
         build_command(fname, map_class, map_args),
         build_command(fname, reduce_class, reduce_args),
