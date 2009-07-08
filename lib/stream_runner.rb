@@ -54,7 +54,7 @@ class StreamRunner
     reduce_opt = ''
     reduce_opts.each {|n, v| reduce_opt += "-jobconf #{n}=#{v} "}
     if input.class == Array
-      input = input.collect {|i| "-input #{i}"}
+      input = input.collect {|i| "-input #{i}"}.join(" ")
     else
       input = "-input #{input}"
     end
