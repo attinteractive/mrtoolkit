@@ -13,3 +13,7 @@ The initial development of this software was supported by the New York Times, wi
 == This github repo
 
 This github repo is a mirror + patches to the mrtoolkit that is hosted on code.google.com: http://code.google.com/p/mrtoolkit/wiki/Introduction
+
+This repo adds, among other things, the ability to install mrtoolkit as a gem:
+
+    gem install jashmenn-mrtoolkit --source=http://gems.github/com
