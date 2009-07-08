@@ -30,13 +30,13 @@ HADOOP_STREAMING="#{HADOOP_HOME}/contrib/streaming/hadoop-#{streaming_version}-s
 class StreamRunner
   def expand_path(file)
     return file if File.exist?(file)
-    rlib = ENV['RUBYLIB']
+    rlib = ENV['RUBYLIB'] || File.dirname(__FILE__)
     raise "Cannot resolve path to #{file} -- no RUBYLIB" unless rlib
-    rlib.split(':').each do |rp|
+    (rlib.split(':') + [File.dirname(__FILE__)]).each do |rp|
       trial = "#{rp}/#{file}"
       return trial if File.exists?(trial)
     end
-    raise "Cannot resolve path to #{file}"
+    raise "Cannot resolve path to #{file}. Is it in RUBYLIB?"
   end
   def expand_paths(extra)
     extras = []
