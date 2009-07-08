@@ -78,6 +78,7 @@ class StreamRunner
 	reduce_opt +
         "#{extras}"
     end
+    cmd += " -verbose " if opts.has_key?(:verbose)
     puts cmd if opts.has_key?(:verbose)
     system(cmd)
   end
