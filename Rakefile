@@ -6,9 +6,9 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "mrtoolkit"
     gem.summary = %Q{Simplify the creation of Hadoop Map/Reduce jobs}
-    gem.email = "cchayden@nyt.com" # totally made this up, no idea what the original author's email actually is
+    gem.email = "nate@natemurray.com"
     gem.homepage = "http://github.com/jashmenn/mrtoolkit"
-    gem.authors = ["cchayden", "vadimj"]
+    gem.authors = ["cchayden", "vadimj", "jashmenn"]
 
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
@@ -39,6 +39,7 @@ end
 
 task :default => :test
 
+require 'yaml'
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
   if File.exist?('VERSION.yml')
