@@ -779,10 +779,10 @@ class JobBase
   # This gathers the declarations and stores in a stage record.
   def add_stage
     case
-    when @map_class.nil?: raise "Map class not specified"
-    when @reduce_class.nil?: raise "Reduce class not specified"
-    when @in_dirs.empty?: raise "Indir not speficied"
-    when @out_dir.nil?: raise "Outdir not specified"
+    when @map_class.nil?    then raise "Map class not specified"
+    when @reduce_class.nil? then raise "Reduce class not specified"
+    when @in_dirs.empty?    then raise "Indir not speficied"
+    when @out_dir.nil?      then raise "Outdir not specified"
     end       
     @stages << [@map_class, @map_args, @map_opts,
       @reduce_class, @reduce_args, @reduce_opts, 
