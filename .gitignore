@@ -4,3 +4,4 @@ coverage
 rdoc
 pkg
 .autosession.vim
+/test/test-out
