@@ -15,7 +15,7 @@ class LogMap < MapBase
     field :date
     field :time
     field :url
-  
+
     emit :date_time
     emit :url
   end
@@ -25,7 +25,7 @@ class LogMap < MapBase
     output.url = input.url
     output
   end
-  
+
 end
 
 class LogReduce < ReduceBase
@@ -58,7 +58,7 @@ class TestMRToolkit < Test::Unit::TestCase
   def test_log
     LogJob.run_command
     out = File.read("test-out")
-    expected = "2008-10-01T10:30:00\t1.2.3.4\tx\n" + 
+    expected = "2008-10-01T10:30:00\t1.2.3.4\tx\n" +
                "2008-10-02T11:30:00\t1.2.3.5\tx\n"
     assert_equal(expected, out)
   end
@@ -72,7 +72,7 @@ end
 class SumMap < MapBase
   def declare
     field :value
-  
+
     emit :count
     emit :total
     emit :sum_of_squares
@@ -85,7 +85,7 @@ class SumMap < MapBase
     output.sum_of_squares = v * v
     output
   end
-  
+
 end
 
 # This could be done with canned reducer
@@ -144,26 +144,25 @@ end
 # Grops times into one-minute buckets
 # Calculates counts for each bucket
 
-require 'parsedate'
+require 'time'
 
 class MinMap < MapBase
   def declare
     field :dt
     field :tm
-  
+
     emit :minute
     emit :count
   end
 
   def process(input, output)
-    res = ParseDate.parsedate(input.dt + " " + input.tm)
-    t = Time.local(*res)
+    t = Time.parse(input.dt + " " + input.tm)
     min = t.min + 60 * (t.hour + 24 * t.wday)
     output.count = 1
     output.minute = min
     output
   end
-  
+
 end
 
 class MyMinReduce < ReduceBase
@@ -211,7 +210,7 @@ class TestMRToolkit < Test::Unit::TestCase
 end
 
 #################################
-# 
+#
 # This is the previous one, but with a standard reducer.
 
 class CollectJob < JobBase
@@ -237,7 +236,7 @@ class TestMRToolkit < Test::Unit::TestCase
 end
 
 #################################
-# 
+#
 # This is the previous one, but with adifferent
 # standard reducer.  This produces the same output
 # as the custom reducer.
