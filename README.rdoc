@@ -4,6 +4,10 @@ MRToolkit provides a framework for building simple Map/Reduce jobs in just a few
 
 Map and reduce jobs are written in Ruby. MRToolkit was inspired by Google's Sawzall.
 
+== Documentation 
+
+If you're looking for documentation or would like to learn more about how this toolkit works, have a look at the {Wiki Page}[https://github.com/attinteractive/mrtoolkit/wiki]
+
 == Acknowledgements
 
 MRToolkit was inspired by Google's Sawzall. We wanted to make it even easier by making use of an existing language, rather than inventing a new one. Ruby was a perfect fit.
