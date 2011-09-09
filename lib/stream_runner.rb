@@ -25,7 +25,7 @@ streaming_version = ENV['HADOOP_STREAMING_VERSION']
 streaming_version ="0.20.0" unless streaming_version
 
 HADOOP_HOME=ENV['HADOOP_HOME']
-HADOOP_STREAMING=Dir.glob("#{HADOOP_HOME}/contrib/streaming/hadoop*streaming*.jar").find{|f| f.include?(streaming_version)}
+HADOOP_STREAMING=Dir.glob("#{HADOOP_HOME}/contrib/streaming/hadoop*streaming*.jar").find{|f| f.downcase.include?(streaming_version.downcase)}
 
 class StreamRunner
   def expand_path(file)
