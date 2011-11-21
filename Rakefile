@@ -7,7 +7,7 @@ begin
     gem.name = "mrtoolkit"
     gem.summary = %Q{Simplify the creation of Hadoop Map/Reduce jobs}
     gem.email = "nate@natemurray.com"
-    gem.homepage = "http://github.com/jashmenn/mrtoolkit"
+    gem.homepage = "http://github.com/attinteractive/mrtoolkit"
     gem.authors = ["cchayden", "vadimj", "jashmenn"]
 
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
