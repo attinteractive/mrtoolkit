@@ -18,14 +18,12 @@
 # your program reads or library files it requires.  You do not have to
 # include the program itself -- this is done automatically.
 #
-# HADOOP_HOME must be set.
-# It might be necessary to change HADOOP_STREAMING_VERSION if the version changes.
+# HADOOP_STREAMING_HOME must be set.
+# We expect HADOOP_STREAMING_HOME to include a symlink (hadoop-streaming.jar) 
+# to the official streaming jar file (e.g. hadoop-streaming-2.0.0-mr1-cdh4.5.0.jar)
 
-streaming_version = ENV['HADOOP_STREAMING_VERSION']
-streaming_version ="0.20.0" unless streaming_version
-
-HADOOP_HOME=ENV['HADOOP_HOME']
-HADOOP_STREAMING=Dir.glob("#{HADOOP_HOME}/contrib/streaming/hadoop*streaming*.jar").find{|f| f.downcase.include?(streaming_version.downcase)}
+HADOOP_STREAMING_HOME=ENV['HADOOP_STREAMING_HOME']
+HADOOP_STREAMING="#{HADOOP_STREAMING_HOME}/hadoop-streaming.jar"
 
 class StreamRunner
   def expand_path(file)
